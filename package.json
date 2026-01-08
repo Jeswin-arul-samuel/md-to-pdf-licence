@@ -1,0 +1,11 @@
+{
+  "name": "md-to-pdf-license-server",
+  "version": "1.0.0",
+  "description": "License key server for MD to PDF Converter",
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "dependencies": {
+    "resend": "^2.0.0"
+  }
+}
