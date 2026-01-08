@@ -1,7 +1,13 @@
-const { Resend } = require('resend');
+const nodemailer = require('nodemailer');
 
-// Initialize Resend with API key from environment
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Create Gmail transporter
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.GMAIL_ADDRESS,
+    pass: process.env.GMAIL_APP_PASSWORD,
+  },
+});
 
 /**
  * Generate a valid license key for MD to PDF Converter
@@ -99,18 +105,20 @@ async function sendLicenseEmail(customerEmail, customerName, licenseKey) {
     </div>
   `;
 
-  const { data, error } = await resend.emails.send({
-    from: 'MD to PDF Converter <onboarding@resend.dev>',
+  const mailOptions = {
+    from: process.env.GMAIL_ADDRESS,
     to: customerEmail,
     subject: 'Your MD to PDF Converter License Key',
     html: emailHtml,
-  });
+  };
 
-  if (error) {
-    throw new Error(`Failed to send email: ${error.message}`);
+  const info = await transporter.sendMail(mailOptions);
+
+  if (!info.messageId) {
+    throw new Error('Failed to send email');
   }
 
-  return data;
+  return info;
 }
 
 /**

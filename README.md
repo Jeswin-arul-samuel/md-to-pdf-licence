@@ -26,12 +26,16 @@ Customer receives license key instantly
 
 ## Setup
 
-### 1. Create Resend Account (Free)
+### 1. Get Gmail App Password
 
-1. Go to https://resend.com
-2. Sign up (free account)
-3. Go to **API Keys** and create a new key
-4. Copy the key (starts with `re_`)
+Gmail requires an "App Password" for third-party apps like this.
+
+1. Go to https://myaccount.google.com/security
+2. Enable **2-Step Verification** (if not already enabled)
+3. Go back to **Security**
+4. Find **"App passwords"** (only appears if 2FA is on)
+5. Select **Mail** and **Windows Computer** (or your device)
+6. Copy the 16-character password (format: `xxxx xxxx xxxx xxxx`)
 
 ### 2. Deploy to Vercel
 
@@ -60,11 +64,11 @@ Since you have GitHub connected to Vercel:
    - Select your GitHub repo `md-to-pdf-license-server`
    - Click **"Import"**
 
-4. **Add Environment Variable**:
+4. **Add Environment Variables**:
    - In Vercel project, go to **Settings** → **Environment Variables**
-   - Add:
-     - **Name**: `RESEND_API_KEY`
-     - **Value**: Your Resend API key (e.g., `re_xxxxx`)
+   - Add two variables:
+     - **Name**: `GMAIL_ADDRESS` | **Value**: `mdtopdf.app@gmail.com`
+     - **Name**: `GMAIL_APP_PASSWORD` | **Value**: Your 16-char app password (e.g., `xxxx xxxx xxxx xxxx`)
      - **Environments**: Select all (Production, Preview, Development)
    - Click **"Save"**
    - Vercel will auto-redeploy
@@ -108,25 +112,20 @@ Keys are validated using a checksum algorithm (sum of charCode * position % 97 =
 
 ## Testing
 
-To test locally:
+To test the webhook (after deployment):
 
 ```bash
-npm install
-npm run dev
-```
-
-Send a POST request to `http://localhost:3000/api/webhook`:
-
-```bash
-curl -X POST http://localhost:3000/api/webhook \
+curl -X POST https://md-to-pdf-licence.vercel.app/api/webhook \
   -H "Content-Type: application/json" \
   -d '{
-    "email": "test@example.com",
-    "full_name": "John Doe",
+    "email": "your-test-email@gmail.com",
+    "full_name": "Test Customer",
     "product_name": "MD to PDF Converter",
     "sale_id": "test-123"
   }'
 ```
+
+You should receive a license key email within seconds!
 
 ---
 
